@@ -21,7 +21,7 @@ import java.util.Vector;
 //绘制界面
 public class Playgroud extends SurfaceView implements View.OnTouchListener {
 
-    private static int WIDTH = 40;
+    private static int WIDTH = 60;
     private static final int ROW = 10;
     private static final int COL = 10;
     //设置路障初始化为10
@@ -198,13 +198,13 @@ public class Playgroud extends SurfaceView implements View.OnTouchListener {
     }
     private void lose(){
 
-        Toast.makeText(getContext(),"Lose the game",Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(),"Lose the game",Toast.LENGTH_SHORT).show();
 
     }
 
     private void win(){
 
-        Toast.makeText(getContext(),"Win the game",Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(),"Win the game",Toast.LENGTH_SHORT).show();
 
     }
 
