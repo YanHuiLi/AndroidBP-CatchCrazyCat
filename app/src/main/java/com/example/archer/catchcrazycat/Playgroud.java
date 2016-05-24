@@ -11,6 +11,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 /**
@@ -20,11 +21,13 @@ import java.util.Vector;
 //绘制界面
 public class Playgroud extends SurfaceView implements View.OnTouchListener {
 
-    private static int WIDTH = 72;
+    private static int WIDTH = 40;
     private static final int ROW = 10;
     private static final int COL = 10;
     //设置路障初始化为10
     private static final int BLOCK = 15;
+
+
     private Dot matrix[][];
     private Dot cat;
 
@@ -56,11 +59,8 @@ public class Playgroud extends SurfaceView implements View.OnTouchListener {
 
         //判断一个点是否是边界
 
-        if (dot.getX() * dot.getY() == 0 || dot.getX() + 1 == COL || dot.getY() + 1 == ROW) {
-            return true;
-        }
+        return dot.getX() * dot.getY() == 0 || dot.getX() + 1 == COL || dot.getY() + 1 == ROW;
 
-        return false;
     }
 
 
@@ -113,29 +113,31 @@ public class Playgroud extends SurfaceView implements View.OnTouchListener {
     }
 
 
-private int getDistance(Dot one,int dir){
+    private int getDistance(Dot one,int dir){
 
-    int distance=0;
-
-    Dot ori=one,next;
-
-    while(true){
-
-        next=getNrighbour(ori,dir);
-        //遇到路障
-        if (next.getStatus()==Dot.STATIC_ON){
-            return distance*-1;
+        int distance=0;
+        if (isAtEge(one)){
+            return 1;
         }
-        if (isAtEge(next)){
+        Dot ori=one,next;
+
+        while(true){
+
+            next=getNrighbour(ori,dir);
+            //遇到路障
+            if (next.getStatus()==Dot.STATIC_ON){
+                return distance*-1;
+            }
+            if (isAtEge(next)){
+                distance++;
+                return  distance;
+            }
             distance++;
-            return  distance;
+            ori=next;
         }
-        distance++;
-        ori=next;
+
+
     }
-
-
-}
 
     private void MoveTo(Dot one){
 
@@ -145,26 +147,55 @@ private int getDistance(Dot one,int dir){
 
     }
 
-    private void  move(){
-        if (isAtEge(cat)){
-            lose();
-            return;
+    private void move() {
+        if (isAtEge(cat)) {
+            lose();return;
         }
-        Vector<Dot> avaliable=new Vector<>();
-        for (int i=1;i<7;i++){
-           Dot n= getNrighbour(cat,i);
-            if (n.getStatus()==Dot.STATIC_OFF){
+        Vector<Dot> avaliable = new Vector<>();
+        Vector<Dot> positive = new Vector<>();
+        HashMap<Dot, Integer> al = new HashMap<Dot, Integer>();
+        for (int i = 1; i < 7; i++) {
+            Dot n = getNrighbour(cat, i);
+            if (n.getStatus() == Dot.STATIC_OFF) {
                 avaliable.add(n);
-            }
+                al.put(n, i);
+                if (getDistance(n, i) > 0) {
+                    positive.add(n);
 
+                }
+            }
         }
-        if (avaliable.size()==0){
+        if (avaliable.size() == 0) {
             win();
-        }else {
+        }else if (avaliable.size() == 1) {
             MoveTo(avaliable.get(0));
+        }else{
+            Dot best = null;
+            if (positive.size() != 0 ) {//存在可以直接到达屏幕边缘的走向
+                System.out.println("向前进");
+                int min = 999;
+                for (int i = 0; i < positive.size(); i++) {
+                    int a = getDistance(positive.get(i), al.get(positive.get(i)));
+                    if (a < min) {
+                        min = a;
+                        best = positive.get(i);
+                    }
+                }
+                MoveTo(best);
+            }else {//所有方向都存在路障
+                System.out.println("躲路障");
+                int max = 0;
+                for (int i = 0; i < avaliable.size(); i++) {
+                    int k = getDistance(avaliable.get(i), al.get(avaliable.get(i)));
+                    if (k <= max) {
+                        max = k;
+                        best = avaliable.get(i);
+                    }
+                }
+                MoveTo(best);
+            }
         }
     }
-
     private void lose(){
 
         Toast.makeText(getContext(),"Lose the game",Toast.LENGTH_LONG).show();
@@ -246,17 +277,20 @@ private int getDistance(Dot one,int dir){
             }
         }
 
-        cat=new Dot(4,5);
-        getDot(4,5).setStatus(Dot.STATIC_IN);
+
+
+        cat=new Dot(5,5);
+        getDot(5,5).setStatus(Dot.STATIC_IN);
         for (int i=0;i<BLOCK;){
             int x= (int) ((Math.random()*1000)%COL);
             int y= (int) ((Math.random()*1000)%ROW);
             if (getDot(x,y).getStatus()==Dot.STATIC_OFF){
                 getDot(x,y).setStatus(Dot.STATIC_ON);
                 i++;
-                System.out.println("Block"+i);
+//                System.out.println("Block"+i);
             }
         }
+
     }
 
     @Override
@@ -271,7 +305,7 @@ private int getDistance(Dot one,int dir){
             if (y%2==0){
                 x= (int) (event.getX()/WIDTH);
             }else {
-//偏移了半个元素的宽度
+                //偏移了半个元素的宽度
                 x= (int) ((event.getX()-WIDTH/2)/WIDTH);
                 //路障模式
 
