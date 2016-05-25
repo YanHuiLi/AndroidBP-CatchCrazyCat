@@ -21,7 +21,7 @@ import java.util.Vector;
 //绘制界面
 public class Playgroud extends SurfaceView implements View.OnTouchListener {
 
-    private static int WIDTH = 60;
+    private static int WIDTH = 40;
     private static final int ROW = 10;
     private static final int COL=10;
 
@@ -280,8 +280,8 @@ public class Playgroud extends SurfaceView implements View.OnTouchListener {
 
 
 
-        cat=new Dot(5,5);
-        getDot(5,5).setStatus(Dot.STATIC_IN);
+        cat=new Dot(4,5);
+        getDot(4,5).setStatus(Dot.STATIC_IN);
         for (int i=0;i<BLOCK;){
             int x= (int) ((Math.random()*1000)%COL);
             int y= (int) ((Math.random()*1000)%ROW);
