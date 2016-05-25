@@ -23,9 +23,10 @@ public class Playgroud extends SurfaceView implements View.OnTouchListener {
 
     private static int WIDTH = 60;
     private static final int ROW = 10;
-    private static final int COL = 10;
+    private static final int COL=10;
+
     //设置路障初始化为10
-    private static final int BLOCK = 15;
+    private static final int BLOCK = 10;
 
 
     private Dot matrix[][];
@@ -153,7 +154,7 @@ public class Playgroud extends SurfaceView implements View.OnTouchListener {
         }
         Vector<Dot> avaliable = new Vector<>();
         Vector<Dot> positive = new Vector<>();
-        HashMap<Dot, Integer> al = new HashMap<Dot, Integer>();
+        HashMap<Dot, Integer> al = new HashMap<>();
         for (int i = 1; i < 7; i++) {
             Dot n = getNrighbour(cat, i);
             if (n.getStatus() == Dot.STATIC_OFF) {
